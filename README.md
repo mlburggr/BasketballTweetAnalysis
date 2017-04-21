@@ -6,7 +6,7 @@
 
 a. twitter
 b. pyquery
-
+c. textblob
 
 2. Clone this repo and put it inside the GetOldTweets folder:
 
