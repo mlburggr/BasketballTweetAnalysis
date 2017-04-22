@@ -44,13 +44,9 @@ class BasketballTweetAnalysis:
 
         # Initialize the array of tweets for the gameDate
         self.tweets[gameDate] = []
-        count = 0
-
-        all_tweets = got.manager.TweetManager.getTweets(tweetCriteria)
         
-        for tweet in all_tweets:
+        for tweet in got.manager.TweetManager.getTweets(tweetCriteria):
             geolocation = self.getTweetGeolocationFromId(tweet.id)
-            count += 1
             if geolocation != "None":
                 self.tweets[gameDate].append(tweet.text)
             else:
@@ -58,7 +54,7 @@ class BasketballTweetAnalysis:
                 longitude = geolocation["coordinates"][0]
                 if (longitude >= 42.95 and longitude <= 43.15) and (latitude >= -76.3 and latitude <= -75.9):
                     self.tweets[gameDate].append(tweet.text)
-        print "Gathered tweets for the week of " + gameDate + " Count: " + str(count)
+        print "Gathered tweets for " + gameDate
         
     def getTweetGeolocationFromId(self, tweetId):
         try:
@@ -80,7 +76,7 @@ class BasketballTweetAnalysis:
             return -1
         else: # Neutral (0) sentiment
             return 0
-        
+
     # Remove links and special characters from a tweet
     def clean_tweet(self, tweet):
         return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
@@ -91,11 +87,20 @@ class BasketballTweetAnalysis:
             return
 
         for date in self.tweets:
+            distribution = {'pos' : 0, 'neg' : 0, 'neu' : 0}
             self.sentiments[date] = 0
             for tweet in self.tweets[date]:
-                self.sentiments[date] = self.getSentimentality(tweet)
-            print self.sentiments
-
+                sentiment = self.getSentimentality(tweet)
+                self.sentiments[date] += sentiment
+                if sentiment > 0:  # Positive sentiment
+                    distribution['pos'] += 1
+                elif sentiment < 0:  # Negative sentiment
+                    distribution['neg'] += 1
+                else:  # Neutral (0) sentiment
+                    distribution['neu'] += 1
+            print distribution.items()
+        print self.sentiments
+        
 if __name__ == "__main__":
     b = BasketballTweetAnalysis()
     b.gatherTweetsForDate("2010-12-04")
@@ -109,4 +114,4 @@ if __name__ == "__main__":
     for date in b.tweets:
         numTweetsGathered = numTweetsGathered + len(b.tweets[date])
     print str(numTweetsGathered) + " tweets were gathered."
-    
+   
