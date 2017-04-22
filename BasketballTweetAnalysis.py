@@ -50,8 +50,8 @@ class BasketballTweetAnalysis:
             if geolocation != "None":
                 self.tweets[gameDate].append(tweet.text)
             else:
-                latitude = geolocation[coordinates][1]
-                longitude = geolocation[coordinates][0]
+                latitude = geolocation["coordinates"][1]
+                longitude = geolocation["coordinates"][0]
                 if (longitude >= 42.95 and longitude <= 43.15) and (latitude >= -76.3 and latitude <= -75.9):
                     self.tweets[gameDate].append(tweet.text)
         print "Gathered tweets for " + gameDate
@@ -76,7 +76,7 @@ class BasketballTweetAnalysis:
             return -1
         else: # Neutral (0) sentiment
             return 0
-        
+
     # Remove links and special characters from a tweet
     def clean_tweet(self, tweet):
         return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
@@ -87,10 +87,19 @@ class BasketballTweetAnalysis:
             return
 
         for date in self.tweets:
+            distribution = {'pos' : 0, 'neg' : 0, 'neu' : 0}
             self.sentiments[date] = 0
             for tweet in self.tweets[date]:
-                self.sentiments[date] += self.getSentimentality(tweet)
-            print self.sentiments
+                sentiment = self.getSentimentality(tweet)
+                self.sentiments[date] += sentiment
+                if sentiment > 0:  # Positive sentiment
+                    distribution['pos'] += 1
+                elif sentiment < 0:  # Negative sentiment
+                    distribution['neg'] += 1
+                else:  # Neutral (0) sentiment
+                    distribution['neu'] += 1
+            print distribution.items()
+        print self.sentiments
         
 if __name__ == "__main__":
     b = BasketballTweetAnalysis()
@@ -99,13 +108,11 @@ if __name__ == "__main__":
     b.gatherTweetsForDate("2011-01-17")
     b.gatherTweetsForDate("2011-02-02")
     b.gatherTweetsForDate("2011-02-09")
-
     b.gatherTweetsForDate("2011-12-02")
     b.gatherTweetsForDate("2012-01-11")
     b.gatherTweetsForDate("2012-01-16")
     b.gatherTweetsForDate("2012-01-21")
     b.gatherTweetsForDate("2012-02-08")
-
     b.gatherTweetsForDate("2012-11-25")
     b.gatherTweetsForDate("2012-12-22")
     b.gatherTweetsForDate("2013-01-02")
@@ -116,7 +123,6 @@ if __name__ == "__main__":
     b.gatherTweetsForDate("2014-01-11")
     b.gatherTweetsForDate("2014-02-12")
     b.gatherTweetsForDate("2014-02-22")
-    
     b.gatherTweetsForDate("2014-11-25")
     b.gatherTweetsForDate("2014-12-20")
     b.gatherTweetsForDate("2015-01-17")
@@ -133,12 +139,10 @@ if __name__ == "__main__":
     b.gatherTweetsForDate("2017-01-07")
     b.gatherTweetsForDate("2017-02-04")
 
-
-
     b.analyzeTweetSentiments()
 
     numTweetsGathered = 0
     for date in b.tweets:
         numTweetsGathered = numTweetsGathered + len(b.tweets[date])
     print str(numTweetsGathered) + " tweets were gathered."
-    
+   
