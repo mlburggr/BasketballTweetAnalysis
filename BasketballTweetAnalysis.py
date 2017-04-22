@@ -103,7 +103,11 @@ class BasketballTweetAnalysis:
         
 if __name__ == "__main__":
     b = BasketballTweetAnalysis()
-
+    b.gatherTweetsForDate("2010-12-04")
+    b.gatherTweetsForDate("2011-01-01")
+    b.gatherTweetsForDate("2011-01-17")
+    b.gatherTweetsForDate("2011-02-02")
+    b.gatherTweetsForDate("2011-02-09")
     b.gatherTweetsForDate("2011-12-02")
     b.gatherTweetsForDate("2012-01-11")
     b.gatherTweetsForDate("2012-01-16")
@@ -134,6 +138,7 @@ if __name__ == "__main__":
     b.gatherTweetsForDate("2016-12-17")
     b.gatherTweetsForDate("2017-01-07")
     b.gatherTweetsForDate("2017-02-04")
+
     b.analyzeTweetSentiments()
 
     numTweetsGathered = 0
