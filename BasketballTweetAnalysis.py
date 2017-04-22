@@ -44,17 +44,21 @@ class BasketballTweetAnalysis:
 
         # Initialize the array of tweets for the gameDate
         self.tweets[gameDate] = []
+        count = 0
+
+        all_tweets = got.manager.TweetManager.getTweets(tweetCriteria)
         
-        for tweet in got.manager.TweetManager.getTweets(tweetCriteria):
+        for tweet in all_tweets:
             geolocation = self.getTweetGeolocationFromId(tweet.id)
+            count += 1
             if geolocation != "None":
                 self.tweets[gameDate].append(tweet.text)
             else:
-                latitude = geolocation[coordinates][1]
-                longitude = geolocation[coordinates][0]
+                latitude = geolocation["coordinates"][1]
+                longitude = geolocation["coordinates"][0]
                 if (longitude >= 42.95 and longitude <= 43.15) and (latitude >= -76.3 and latitude <= -75.9):
                     self.tweets[gameDate].append(tweet.text)
-        print "Gathered tweets for " + gameDate
+        print "Gathered tweets for the week of " + gameDate + " Count: " + str(count)
         
     def getTweetGeolocationFromId(self, tweetId):
         try:
@@ -89,9 +93,9 @@ class BasketballTweetAnalysis:
         for date in self.tweets:
             self.sentiments[date] = 0
             for tweet in self.tweets[date]:
-                self.sentiments[date] += self.getSentimentality(tweet)
+                self.sentiments[date] = self.getSentimentality(tweet)
             print self.sentiments
-        
+
 if __name__ == "__main__":
     b = BasketballTweetAnalysis()
     b.gatherTweetsForDate("2010-12-04")
