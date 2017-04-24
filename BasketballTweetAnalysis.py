@@ -16,6 +16,7 @@ import re
 import textblob
 
 import config
+
 class BasketballTweetAnalysis:
     # Define class variables.
     # "tweets" is a dictionary that maps each date to a list of tweets.
