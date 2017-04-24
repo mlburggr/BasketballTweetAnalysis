@@ -32,6 +32,7 @@ class BasketballTweetAnalysis:
                             )
     # Gather tweets for a given date range. "gameDate" should be a string in the form:
     # YYYY-MM-DD
+    # Get tweets from a week before to a day before the given date.
     def gatherTweetsForDate(self, gameDate):
         date=datetime.datetime.strptime(gameDate, "%Y-%m-%d").date()
 
@@ -55,7 +56,8 @@ class BasketballTweetAnalysis:
                 if (longitude >= 42.95 and longitude <= 43.15) and (latitude >= -76.3 and latitude <= -75.9):
                     self.tweets[gameDate].append(tweet.text)
         print "Gathered tweets for " + gameDate
-        
+
+    # Given a tweetId, return the geolocation of it, if it exists.
     def getTweetGeolocationFromId(self, tweetId):
         try:
             geo = self.twitterApi.statuses.show(id=tweetId)["geo"]
@@ -67,9 +69,10 @@ class BasketballTweetAnalysis:
             geo = self.twitterApi.statuses.show(id=tweetId)["geo"]
         return geo
 
+    # Given the text of a tweet, use textblob to retrieve a sentiment value.
+    # -1, 0, or 1
     def getSentimentality(self, tweet):
         sentiment = textblob.TextBlob(self.clean_tweet(tweet)).sentiment.polarity
-
         if sentiment > 0: # Positive sentiment
             return 1
         elif sentiment < 0: # Negative sentiment
@@ -80,7 +83,8 @@ class BasketballTweetAnalysis:
     # Remove links and special characters from a tweet
     def clean_tweet(self, tweet):
         return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
-        
+
+    # Analyze the sentiments of each tweet in "tweets" and insert it into the "sentiments" dict
     def analyzeTweetSentiments(self):
         if len(self.tweets) == 0:
             print "No tweets gathered!"
